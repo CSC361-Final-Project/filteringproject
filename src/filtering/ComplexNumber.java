@@ -5,6 +5,8 @@
  */
 package filtering;
 
+import java.util.Arrays;
+
 /**
  *
  * @author kincbe10
@@ -180,9 +182,8 @@ public class ComplexNumber {
             throw new RuntimeException("Illegal matrices");
         }
         ComplexNumber[] B = new ComplexNumber[A.length];
-        for (int w = 0; w < B.length; w++){
-            B[w] = new ComplexNumber(0,0);
-        }
+        Arrays.fill(B, new ComplexNumber(0,0));
+
         for(int i = 0; i < A.length; i++){
             for(int j = 0; j < A[0].length; j++){
                 B[j] = B[j].add(A[i][j].multiply(D[i]));
@@ -195,9 +196,10 @@ public class ComplexNumber {
             throw new RuntimeException("Illegal matrices");
         }
         ComplexNumber[] B = new ComplexNumber[A.length];
-        for (int w = 0; w < B.length; w++){
-            B[w] = new ComplexNumber(0,0);
-        }
+        Arrays.fill(B, new ComplexNumber(0,0));
+//        for (int w = 0; w < B.length; w++){
+//            B[w] = new ComplexNumber(0,0);
+//        }
         for(int i = 0; i < A.length; i++){
             for(int j = 0; j < A[0].length; j++){
                 B[j] = B[j].add(A[i][j].multiply(D[i]));
@@ -238,8 +240,9 @@ public class ComplexNumber {
     public static void printComplexVectorCSV(ComplexNumber[]F){
         for(int i = 0; i < F.length; i++){
            
-               // String ij = F[i].complexNumberToString();
-                    System.out.println(i+", "+F[i].magnitude());
+                String ij = F[i].complexNumberToString();
+                System.out.println(i+", "+ij);
+                 //   System.out.println(i+", "+F[i].magnitude());
                     
             
             System.out.println();
