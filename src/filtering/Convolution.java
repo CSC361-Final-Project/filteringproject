@@ -15,35 +15,33 @@ import java.util.Arrays;
  */
 public class Convolution {
     //
-    public static double[] convolve(double[] S, double[] M) {
-        double[] result = new double[S.length];
-        Arrays.fill(result, 0);
-        for (int i=0; i<S.length; i++){
-            for (int j=0; j<S.length; j++){
-                if(i < j ){
-                    result[i] = result[i] + S[j]*M[i-j+S.length];
+    public static double[] convolveFIR(double[] S, double[] M) {
+        double[] res = new double[S.length];
+        Arrays.fill(res, 0);
+        for(int n = 0; n < S.length; n++){
+            for (int k=0; k<M.length; k++){
+                double mult = 0;
+                if(S.length - k >= 0){
+                   mult = M[k]*S[S.length-k];
                 }
-                else{
-                    result[i] = result[i] + S[j]*M[i-j];
-                    }
-            }         
-        }           
-        return result;
+                res[n] = res[n]+mult;
+            }
+        }
+        return res;
     }
-    public static ComplexNumber[] convolve(ComplexNumber[] S, ComplexNumber[] M) {
-        ComplexNumber[] result = new ComplexNumber[S.length];
-        Arrays.fill(result, new ComplexNumber(0, 0));
-        for (int i=0; i<S.length; i++){
-            for (int j=0; j<S.length; j++){
-                if(i < j ){
-                    result[i] = result[i].add(S[j].multiply(M[i-j+S.length]));
+    public static ComplexNumber[] convolveFIR(ComplexNumber[] S, ComplexNumber[] M) {
+        ComplexNumber[] res = new ComplexNumber[S.length];
+        Arrays.fill(res, new ComplexNumber(0, 0));
+        for(int n = 0; n < S.length; n++){
+            for (int k=0; k<M.length; k++){
+                ComplexNumber mult = new ComplexNumber(0,0);
+                if(S.length - k >= 0){
+                   mult = M[k].multiply(S[S.length-k]);
                 }
-                else{
-                    result[i] = result[i].add(S[j].multiply(M[i-j]));
-                    }
-            }         
-        }           
-        return result;
+                res[n] = res[n].add(mult);
+            }
+        } 
+        return res;
     }
 
 

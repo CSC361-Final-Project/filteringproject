@@ -269,4 +269,30 @@ public class Fourier {
         
         return res;
     }
+    
+     public static double[] ifftDouble(ComplexNumber[] S){
+        //error checking for vector length--> must be a power of 2
+        if(S.length%2 != 0){
+            throw new RuntimeException("Coefficient vector length must be a power of 2 to use FFT");
+        }
+        //array to hold output
+        ComplexNumber[] resC = new ComplexNumber[S.length];
+        double[] res = new double[S.length];
+        for(int i = 0; i < S.length; i++ ){
+            resC[i] = S[i].conjugate();
+        }
+        
+        //call fft
+        resC = fft(resC);
+        
+        //take conjugate and divide by n
+        for(int j = 0; j < S.length; j++ ){
+            ComplexNumber temp = resC[j].conjugate();
+            resC[j] = resC[j].divide((double)S.length);
+            res[j] = resC[j].magnitudeDouble();
+            
+        }
+        
+        return res;
+    }
 }
