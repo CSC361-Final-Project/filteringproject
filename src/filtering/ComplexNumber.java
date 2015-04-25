@@ -153,6 +153,22 @@ public class ComplexNumber {
         return sin().divide(cos());
     }
     
+    public static ComplexNumber[] vectorDotMultiply(ComplexNumber[] A, ComplexNumber[] B){
+        int size;
+        if(A.length > B.length){
+            size = B.length;
+        }
+        else size = A.length;
+        
+        ComplexNumber[] C = new ComplexNumber[size];
+        
+        
+        for(int i = 0; i < size; i++){
+            C[i] = A[i].multiply(B[i]);
+        }
+        return C;
+    }
+    
      
     public static ComplexNumber[][] matrixMultiply(ComplexNumber[][] A, ComplexNumber[][] B){
         int mA = A.length;

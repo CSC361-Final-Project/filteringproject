@@ -5,6 +5,9 @@
  */
 package filtering;
 
+import static filtering.ComplexNumber.vectorDotMultiply;
+import static filtering.Fourier.fft;
+import static filtering.Fourier.ifftDouble;
 import java.util.Arrays;
 
 /**
@@ -21,8 +24,8 @@ public class Convolution {
         for(int n = 0; n < S.length; n++){
             for (int k=0; k<M.length; k++){
                 double mult = 0;
-                if(S.length - k >= 0){
-                   mult = M[k]*S[S.length-k];
+                if(n - k >= 0){
+                   mult = M[k]*S[n-k];
                 }
                 res[n] = res[n]+mult;
             }
@@ -35,13 +38,21 @@ public class Convolution {
         for(int n = 0; n < S.length; n++){
             for (int k=0; k<M.length; k++){
                 ComplexNumber mult = new ComplexNumber(0,0);
-                if(S.length - k >= 0){
-                   mult = M[k].multiply(S[S.length-k]);
+                if(n - k >= 0){
+                   mult = M[k].multiply(S[n-k]);
                 }
                 res[n] = res[n].add(mult);
             }
         } 
         return res;
+    }
+    
+    public static double[] fourierConvolveFIR(double[]S, double[]M){
+        ComplexNumber[] a = fft(S);
+        ComplexNumber[] b = fft(M);
+        ComplexNumber[] c = vectorDotMultiply(a, b);
+        double[] d = ifftDouble(c);
+        return d;
     }
 
 

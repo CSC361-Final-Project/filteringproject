@@ -5,9 +5,12 @@
  */
 package filtering;
 
+import static filtering.ComplexNumber.vectorDotMultiply;
 import static filtering.Convolution.convolveFIR;
+import static filtering.Convolution.fourierConvolveFIR;
 import static filtering.Fourier.fft;
 import static filtering.Fourier.ifftDouble;
+import static filtering.Fourier.matrixVectorDFT;
 
 /**
  *
@@ -15,30 +18,44 @@ import static filtering.Fourier.ifftDouble;
  */
 public class FilterTimer {
     
-    public static long fftTimer(ComplexNumber[] S){
+    public static double fftTimer(double[] S){
         long startTime = System.nanoTime();
         fft(S);
         long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;  
+        double duration = (double)(endTime - startTime)/1000000;  
         return duration;
     }
     
-    public static long timeDomainConvolveTimer(double[]S, double[]M){
+    public static double dftTimer(double[] S){
         long startTime = System.nanoTime();
-        convolveFIR(S, M);
+        matrixVectorDFT(S);
         long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;  
+        double duration = (double)(endTime - startTime)/1000000;  
         return duration;
     }
     
-    public static long freqDomainConvolveTimer(double[]S, double[]M){
+    
+    public static double fftTimer(ComplexNumber[] S){
         long startTime = System.nanoTime();
-        ComplexNumber[] a = fft(S);
-        ComplexNumber[] b = fft(M);
-        ComplexNumber[] c = convolveFIR(a, b);
-        double[] d = ifftDouble(c);
+        fft(S);
         long endTime = System.nanoTime();
-        long duration = (endTime - startTime)/1000000;
+        double duration = (double)(endTime - startTime)/1000000;  
+        return duration;
+    }
+    
+    public static double timeDomainConvolveTimer(double[]S, double[]M){
+        long startTime = System.nanoTime();
+        double[]d = convolveFIR(S, M);
+        long endTime = System.nanoTime();
+        double duration = (double)(endTime - startTime)/1000000;  
+        return duration;
+    }
+    
+    public static double freqDomainConvolveTimer(double[]S, double[]M){
+        long startTime = System.nanoTime();
+        double [] d = fourierConvolveFIR(S, M);
+        long endTime = System.nanoTime();
+        double duration = (double)(endTime - startTime)/1000000;
         return duration;
     }
 }
