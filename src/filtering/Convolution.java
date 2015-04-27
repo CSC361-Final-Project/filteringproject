@@ -5,9 +5,13 @@
  */
 package filtering;
 
+import static filtering.ComplexNumber.printComplexVectorCSV;
 import static filtering.ComplexNumber.vectorDotMultiply;
+import static filtering.Fourier.dft;
 import static filtering.Fourier.fft;
+//import static filtering.Fourier.fftDouble;
 import static filtering.Fourier.ifftDouble;
+import static filtering.Fourier.matrixVectorDFT;
 import java.util.Arrays;
 
 /**
@@ -48,11 +52,29 @@ public class Convolution {
     }
     
     public static double[] fourierConvolveFIR(double[]S, double[]M){
+     //   ComplexNumber[] conv = fft(S);
+        //double[] p = dft(S, S.length);
+        //ComplexNumber[] q = dft(S, S.length) ;      // ComplexNumber[] a = fft(S);
+       // printComplexVectorCSV(conv);
+       // ComplexNumber[] g = matrixVectorDFT(S);
+       // ComplexNumber[] q = fft(S);
+      // printComplexVectorCSV(q);
+        
+     //   printComplexVectorCSV(p);
+        
+     //   printComplexVectorCSV(g);
         ComplexNumber[] a = fft(S);
         ComplexNumber[] b = fft(M);
         ComplexNumber[] c = vectorDotMultiply(a, b);
-        double[] d = ifftDouble(c);
-        return d;
+        return ifftDouble(c);
+        
+    }
+    public static double[] fourierConvolveFIR(ComplexNumber[]S, ComplexNumber[]M){
+        ComplexNumber[] a = fft(S);
+        ComplexNumber[] b = fft(M);
+        ComplexNumber[] c = vectorDotMultiply(a, b);
+        return ifftDouble(c);
+        
     }
 
 

@@ -6,6 +6,7 @@
 package filtering;
 
 import static java.lang.System.arraycopy;
+import java.util.Arrays;
 
 /**
  *
@@ -132,43 +133,43 @@ public class Fourier {
     //FFT w/ ComplexNumber Param only works on matrices where length%2 = 0
     public static ComplexNumber[] fft(ComplexNumber[] S){
         //base case
-        if(S.length == 1){
-            ComplexNumber[] bc = new ComplexNumber[1];
-            arraycopy(S, 0, bc, 0, 1);
-            return bc;
+        int N = S.length;
+        if(N == 1){
+            return new ComplexNumber[] {S[0]};
         }
         //error checking for vector length--> must be a power of 2
-        if(S.length%2 != 0){
+        if(N%2 != 0){
             throw new RuntimeException("Coefficient vector length must be a power of 2 to use FFT");
         }
         //array to hold even input coefficients
-        ComplexNumber[] E = new ComplexNumber[S.length/2];
+        ComplexNumber[] evens = new ComplexNumber[N/2];
         //take coefficients at 2*i to get even indexed values from input
-        for(int i = 0; i < E.length; i++ ){
-            E[i] = S[i*2];
+        for(int i = 0; i < N/2; i++ ){
+            evens[i] = S[i*2];
         }
         //recurse on evens
-        ComplexNumber[] ER = fft(E);
+        ComplexNumber[] evenRec = fft(evens);
         
         //array to hold odd input coefficients
-        ComplexNumber[] O = new ComplexNumber[S.length/2];
+        ComplexNumber[] odds = new ComplexNumber[N/2];
         //take coefficients at 2*k+1 to get odd indexed values from input
-        for(int k = 0; k < E.length; k++ ){
-            O[k] = S[k*2+1];
+        for(int j = 0; j < N/2; j++ ){
+            odds[j] = S[(2*j)+1];
         }
         //recurse on odds
-        ComplexNumber[] OR = fft(O);
+        ComplexNumber[] oddRec = fft(odds);
         
         //array to hold result
-        ComplexNumber[] res = new ComplexNumber[S.length];
+        ComplexNumber[] res = new ComplexNumber[N];
         //combine computing transform at each index
-        for(int j = 0; j < S.length/2; j++){
+        for(int k = 0; k < N/2; k++){
             //calc Fourier Multiple for each index
-            ComplexNumber temp = new ComplexNumber(Math.cos(-2*j*Math.PI/S.length), Math.sin(-2*j*Math.PI/S.length));
+            double mult = -2*k*Math.PI/N;
+            ComplexNumber root = new ComplexNumber(Math.cos(mult), Math.sin(mult));
             //add sum of even and temp*odd to first half of output
-            res[j] = ER[j].add(temp.multiply(OR[j]));
+            res[k] = evenRec[k].add(root.multiply(oddRec[k]));
             //add difference of even and temp*odd to second half of output
-            res[j + S.length/2] = ER[j].subtract(temp.multiply(OR[j]));
+            res[k+ N/2] = evenRec[k].subtract(root.multiply(oddRec[k]));
         }
         
         return res;
@@ -176,123 +177,69 @@ public class Fourier {
     
     //FFT w/ Double Param only works on matrices where length%2 = 0
     public static ComplexNumber[] fft(double[] S){
-        //base case
-        if(S.length == 1){
-            ComplexNumber[] bc = new ComplexNumber[1];
-            arraycopy(S, 0, bc, 0, 1);
-        }
-        //error checking for vector length--> must be a power of 2
-        if(S.length%2 != 0){
-            throw new RuntimeException("Coefficient vector length must be a power of 2 to use FFT");
-        }
-        //array to hold even input coefficients
-        ComplexNumber[] E = new ComplexNumber[S.length/2];
-        //take coefficients at 2*i to get even indexed values from input
-        for(int i = 0; i < E.length; i++ ){
-            E[i] = new ComplexNumber(S[i*2], 0);
-        }
-        //recurse on evens
-        ComplexNumber[] ER = fft(E);
+        ComplexNumber[] r = new ComplexNumber[S.length];
+        for(int i = 0; i < S.length; i++)
+            r[i] = new ComplexNumber(S[i], 0);
         
-        //array to hold odd input coefficients
-        ComplexNumber[] O = new ComplexNumber[S.length/2];
-        //take coefficients at 2*k+1 to get odd indexed values from input
-        for(int k = 0; k < E.length; k++ ){
-            O[k] = new ComplexNumber(S[k*2+1], 0);
-        }
-        //recurse on odds
-        ComplexNumber[] OR = fft(O);
-        
-        //array to hold result
-        ComplexNumber[] res = new ComplexNumber[S.length];
-        //combine computing transform at each index
-        for(int j = 0; j < S.length/2; j++){
-            //calc Fourier Multiple for each index
-            ComplexNumber temp = new ComplexNumber(Math.cos(-2*j*Math.PI/S.length), Math.sin(-2*j*Math.PI/S.length));
-            //add sum of even and temp*odd to first half of output
-            res[j] = ER[j].add(temp.multiply(OR[j]));
-            //add difference of even and temp*odd to second half of output
-            res[j + S.length/2] = ER[j].subtract(temp.multiply(OR[j]));
-        }
-        
-        return res;
+        return fft(r);
     }
     
-    /*Compute IFFT by taking conjugate of input computing fft, 
-     *then the conjugate of that result and multiplying each 
-     *entry by 1/N
-    */
-    //IFFT w/ ComplexNumber Param only works on matrices where length%2 = 0
     public static ComplexNumber[] ifft(ComplexNumber[] S){
-        //error checking for vector length--> must be a power of 2
-        if(S.length%2 != 0){
-            throw new RuntimeException("Coefficient vector length must be a power of 2 to use FFT");
-        }
-        //array to hold output
-        ComplexNumber[] res = new ComplexNumber[S.length];
-        for(int i = 0; i < S.length; i++ ){
+        int N = S.length;
+        ComplexNumber[] res = new ComplexNumber[N];
+        for(int i = 0; i < N; i++){
             res[i] = S[i].conjugate();
         }
         
-        //call fft
         res = fft(res);
         
-        //take conjugate and divide by n
-        for(int j = 0; j < S.length; j++ ){
-            ComplexNumber temp = res[j].conjugate();
-            res[j] = res[j].divide((double)S.length);
+        for(int j = 0; j < N; j++){
+            res[j] = res[j].conjugate().multiply(1.0/N);
         }
         
         return res;
+        
     }
     
-    //IFFT with double param only works on matrices where length%2 = 0
-    public static ComplexNumber[] ifft(double[] S){
-        //error checking for vector length--> must be a power of 2
-        if(S.length%2 != 0){
-            throw new RuntimeException("Coefficient vector length must be a power of 2 to use FFT");
-        }
-        //array to hold output
-        ComplexNumber[] res = new ComplexNumber[S.length];
-        for(int i = 0; i < S.length; i++ ){
-            res[i] = new ComplexNumber(1/S[i], 0);
+    public static double[] ifftDouble(ComplexNumber[] S){
+        int N = S.length;
+        ComplexNumber[] res = new ComplexNumber[N];
+        double[] resD = new double[N];
+        for(int i = 0; i < N; i++){
+            res[i] = S[i].conjugate();
         }
         
-        //call fft
         res = fft(res);
         
-        //take conjugate and divide by n
-        for(int j = 0; j < S.length; j++ ){
-            ComplexNumber temp = res[j].conjugate();
-            res[j] = res[j].divide((double)S.length);
+        for(int j = 0; j < N; j++){
+           resD[j] = res[j].conjugate().multiply(1.0/N).magnitudeDouble();
         }
         
-        return res;
+        return resD;
+        
     }
-    
-     public static double[] ifftDouble(ComplexNumber[] S){
-        //error checking for vector length--> must be a power of 2
-        if(S.length%2 != 0){
-            throw new RuntimeException("Coefficient vector length must be a power of 2 to use FFT");
-        }
-        //array to hold output
-        ComplexNumber[] resC = new ComplexNumber[S.length];
-        double[] res = new double[S.length];
-        for(int i = 0; i < S.length; i++ ){
-            resC[i] = S[i].conjugate();
-        }
-        
-        //call fft
-        resC = fft(resC);
-        
-        //take conjugate and divide by n
-        for(int j = 0; j < S.length; j++ ){
-            ComplexNumber temp = resC[j].conjugate();
-            resC[j] = resC[j].divide((double)S.length);
-            res[j] = resC[j].magnitudeDouble();
-            
-        }
-        
-        return res;
-    }
+
+     public static double[] dft(double[] samp, int N){
+         double[] F = new double[N/2];
+         Arrays.fill(F, 0.0);
+         double[] I = new double[N/2];
+         Arrays.fill(I, 0.0);
+         double[] R = new double[N/2];
+         Arrays.fill(R, 0.0);
+         for(int i = 0; i < N/2; i++){
+             double cosTot = 0;
+             double sinTot = 0;
+             for(int j = 0; j < N; j++){
+                 cosTot = cosTot+samp[j]*Math.cos((2*Math.PI*i*j)/N);
+                 sinTot = sinTot+samp[j]*Math.sin((2*Math.PI*i*j)/N);
+             }
+             I[i] = (1.0/N)*cosTot;
+             R[i] = (1.0/N)*sinTot;
+             F[i] = Math.sqrt(Math.pow(I[i],2)+Math.pow(R[i],2));
+         }
+         
+         return F;
+         
+     }
 }
+

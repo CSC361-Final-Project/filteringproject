@@ -255,10 +255,10 @@ public class ComplexNumber {
     }
     public static void printComplexVectorCSV(ComplexNumber[]F){
         for(int i = 0; i < F.length; i++){
-           
-                String ij = F[i].complexNumberToString();
-                System.out.println(i+", "+ij);
-                 //   System.out.println(i+", "+F[i].magnitude());
+               // double temp = F[i].magnitudeDouble();
+               String ij = F[i].complexNumberToString();
+                System.out.println(ij);
+                   // System.out.println(temp);
                     
             
             System.out.println();

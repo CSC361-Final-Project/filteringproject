@@ -7,16 +7,25 @@ package filtering;
 
 
 import static filtering.ComplexNumber.printComplexVectorCSV;
+import static filtering.ComplexNumber.vectorDotMultiply;
 import static filtering.Convolution.convolveFIR;
 import static filtering.FilterBuilder.bandstopFilter;
+import static filtering.FilterBuilder.cutSignal;
 import static filtering.FilterBuilder.firHighPassFilter;
 import static filtering.FilterBuilder.firLowPassFilter;
+import static filtering.FilterBuilder.padFilter;
+import static filtering.FilterBuilder.padSignal;
 import static filtering.FilterTimer.dftTimer;
 import static filtering.FilterTimer.fftTimer;
 import static filtering.FilterTimer.freqDomainConvolveTimer;
+import static filtering.FilterTimer.timeAndSaveFD;
+import static filtering.FilterTimer.timeAndSaveTD;
 import static filtering.FilterTimer.timeDomainConvolveTimer;
 import static filtering.Fourier.fft;
-import static filtering.Fourier.ifft;
+//import static filtering.Fourier.ifft;
+//import static filtering.Fourier.ifftDouble;
+import static filtering.StdDraw.BLUE;
+import static filtering.StdDraw.RED;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -37,33 +46,31 @@ public class Filtering {
      */
     public static void main(String[] args) throws UnsupportedAudioFileException, FileNotFoundException, IOException, LineUnavailableException {
         // TODO code application logic here
-        AudioSignal beethoven = new AudioSignal("Beethoven.wav");
-//        byte[] pre = beethoven.getSampleBytes();
-//        double[] d = beethoven.getSamples();
-//        byte[] post = beethoven.sampleToBytes(d);
-//        for(int i = 0; i < pre.length; i++){
-//         //   if(pre[i] != post[i])
-//            System.out.println("i: "+i+ " Pre: "+ pre[i] + " Post: " + post[i]  );
-//        }
-        double[] mask = bandstopFilter(beethoven, 30000, 28000, 33);
+        AudioSignal[] sigArr = new AudioSignal[4];
+        //sigArr[0] = new AudioSignal("beethoven16.wav");
+        sigArr[0] = new AudioSignal("beethoven256.wav");
+        sigArr[1] = new AudioSignal("beethoven4096.wav");
+        sigArr[2] = new AudioSignal("beethoven65536.wav");
+        sigArr[3] = new AudioSignal("beethoven131072.wav");//         StdDraw.setCanvasSize(1024,720);
+//         StdDraw.setXscale(0,10);
+//         StdDraw.setYscale(0, 10);
+//         StdDraw.setPenRadius(0.02);
+        for(int j = 0; j < 4; j++){
+            int log2 = (int) ((int) Math.log(sigArr[j].getSamples().length)/Math.log(2));
+            for(int i = 0; i < log2; i++){    
         
-        double[] beethovenConv = convolveFIR(beethoven.getSamples(), mask);
+            double[] mask = firLowPassFilter(sigArr[j], 10000, (int) (Math.pow(2, i)+1));
         
-        AudioSignal beethoven2 = new AudioSignal(beethoven, beethovenConv);
-        
-        WavFile test = new WavFile (beethoven2, "test.wav");
-        test.save();
-        //for(int i = 0; i < 100000; i++)        
-        //    test.play();
-        test.playLines();
-        test.close();
-        
-
+            double timeTD = timeAndSaveTD(sigArr[j], mask, i+"-"+j+"t.wav");
+           
+            double timeFD = timeAndSaveFD(sigArr[j], mask, i+"-"+j+"t.wav");
+            
+            System.out.println(sigArr[j].getSamples().length+" "+mask.length+" "+timeTD+" "+timeFD);
+        }
+    }
     
     }
-
-    private static double[] bandpassFilter(AudioSignal beethoven, int i, int i0) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
+   
+    
     

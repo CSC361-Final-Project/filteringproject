@@ -197,7 +197,7 @@ public abstract class FilterBuilder {
      
     public static double[] padFilter(double[]s, double[]m){
         double[] p = new double [s.length];
-        for(int i = 0; i > m.length; i++){
+        for(int i = 0; i < m.length; i++){
             p[i] = m[i];
         }
         for(int j = m.length; j < s.length; j++){
@@ -206,7 +206,56 @@ public abstract class FilterBuilder {
         return p;
     }
     
+    public static AudioSignal padSignal(AudioSignal s){
+        int len = s.getSamples().length;
+        int two = 0;
+        int i = 0; 
+        while(two < len){
+            two = (int) Math.pow(2, i);
+            i++;
+           // System.out.println(two);
+        
+        }
+        double [] padded = new double[two];
+        
+        
+        for(int j = 0; j < len; j++){
+            padded[j] = s.getSamples()[j];
+        }
+        for(int k = len; k < two; k++){
+            padded[k] = 0;
+        }
+        
+        
+        System.out.println(padded.length);
+        
+        return new AudioSignal(s, padded);
+    }
     
+    public static AudioSignal cutSignal(AudioSignal s){
+        int len = s.getSamples().length;
+        int two = 0;
+        int i = 0; 
+        while(two < len){
+            two = (int) Math.pow(2, i);
+            i++;
+           // System.out.println(two);
+        
+        }
+        int prevTwo = (int) Math.pow(2, i-2);
+        
+        double [] cut = new double[prevTwo];
+        
+        
+        for(int j = 0; j < prevTwo; j++){
+            cut[j] = s.getSamples()[j];
+        }
+      
+        
+        System.out.println(cut.length);
+        
+        return new AudioSignal(s, cut);
+    }
     
     
 }

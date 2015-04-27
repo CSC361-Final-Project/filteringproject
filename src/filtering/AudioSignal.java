@@ -7,7 +7,7 @@ package filtering;
 
 import java.io.File;
 import java.io.IOException;
-//import java.nio.ByteBuffer;
+import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
@@ -46,6 +46,8 @@ public class AudioSignal {
     }
     
     public AudioSignal(AudioSignal formatCopy, double[] samp){
+        
+       
         this.format = new AudioFormat(formatCopy.getEncoding(), formatCopy.getSampleRateFloat(), 
                                                 formatCopy.getSampleSizeInBits(), formatCopy.getChannels(), 
                                                     formatCopy.getFrameSize(), formatCopy.getFrameRateFloat(), formatCopy.getEndianness() );
@@ -57,6 +59,7 @@ public class AudioSignal {
         this.sampleSizeInBits = format.getSampleSizeInBits();
         this.samples = samp;
         this.b = this.sampleToBytes(samp);
+        
         
     }
     
@@ -174,6 +177,8 @@ public class AudioSignal {
         }
         return res;
     }
+    
+    
     
 //    public static byte[] sampleToBytes(double[] d){
 //        byte[] by = new byte[8*d.length];
