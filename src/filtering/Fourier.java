@@ -168,7 +168,7 @@ public class Fourier {
             ComplexNumber root = new ComplexNumber(Math.cos(mult), Math.sin(mult));
             //add sum of even and temp*odd to first half of output
             res[k] = evenRec[k].add(root.multiply(oddRec[k]));
-            //add difference of even and temp*odd to second half of output
+            //add difference of even and root*odd to second half of output
             res[k+ N/2] = evenRec[k].subtract(root.multiply(oddRec[k]));
         }
         

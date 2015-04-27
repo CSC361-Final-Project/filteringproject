@@ -23,14 +23,19 @@ import java.util.Arrays;
 public class Convolution {
     //
     public static double[] convolveFIR(double[] S, double[] M) {
+        //Array to hold result
         double[] res = new double[S.length];
+        //Fill array with zeros
         Arrays.fill(res, 0);
+        //loop through each filter element for each Sample
         for(int n = 0; n < S.length; n++){
             for (int k=0; k<M.length; k++){
                 double mult = 0;
+                //if n-k is valid index multiply Mask[K] by Signal[n-k]
                 if(n - k >= 0){
                    mult = M[k]*S[n-k];
                 }
+                //accumulate result
                 res[n] = res[n]+mult;
             }
         }
